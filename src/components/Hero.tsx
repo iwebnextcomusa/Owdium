@@ -1,7 +1,7 @@
-import React from 'react';
-import { Headphones, Globe, Sparkles, ArrowRight } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Headphones, Globe, Sparkles, ArrowRight, Volume2, VolumeX } from 'lucide-react';
 
-const heroBgImage = '/src/assets/images/hero_african_audio_bg_1784835445066.jpg';
+const heroVideoUrl = 'https://je9q7pguifcvzvaa.public.blob.vercel-storage.com/Create_video_for_owdium.com_202607240058.mp4';
 
 interface HeroProps {
   onStartListening: () => void;
@@ -9,19 +9,63 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({ onStartListening, onExploreLanguages }) => {
+  const [isMuted, setIsMuted] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    if (videoRef.current && videoRef.current.duration) {
+      const trimThreshold = videoRef.current.duration - 3;
+      if (trimThreshold > 0 && videoRef.current.currentTime >= trimThreshold) {
+        videoRef.current.currentTime = 0;
+        videoRef.current.play().catch(() => {});
+      }
+    }
+  };
+
   return (
     <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-32 overflow-hidden border-b border-[#D4AF37]/15">
-      {/* Background Image Container with Overlay */}
+      {/* Background Video Container with Overlay */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        <img
-          src={heroBgImage}
-          alt="African storytelling and audio culture background"
-          referrerPolicy="no-referrer"
-          className="w-full h-full object-cover object-center scale-105 filter brightness-90 contrast-110"
+        <video
+          ref={videoRef}
+          src={heroVideoUrl}
+          autoPlay
+          muted={isMuted}
+          playsInline
+          onTimeUpdate={handleTimeUpdate}
+          className="w-full h-full object-cover object-center scale-105 filter brightness-100 contrast-105"
         />
-        {/* Dark Emerald & Gradient Overlay for perfect text legibility */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#071912]/90 via-[#071912]/80 to-[#071912]" />
-        <div className="absolute inset-0 bg-[#071912]/40 backdrop-blur-[1px]" />
+        {/* Dark Emerald & Gradient Overlay tuned for high video visibility and clear readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#071912]/60 via-[#071912]/45 to-[#071912]/75" />
+        <div className="absolute inset-0 bg-[#071912]/15 backdrop-blur-[0.5px]" />
+      </div>
+
+      {/* Floating Mute/Unmute Video Audio Toggle */}
+      <div className="absolute bottom-6 right-6 z-20">
+        <button
+          onClick={toggleMute}
+          title={isMuted ? 'Unmute Video Audio' : 'Mute Video Audio'}
+          className="flex items-center space-x-2 px-3.5 py-2 rounded-full bg-[#071912]/80 hover:bg-[#0D281E] backdrop-blur-md border border-[#D4AF37]/40 text-[#D4AF37] text-xs font-semibold shadow-lg transition-all duration-200 hover:scale-105 active:scale-95"
+        >
+          {isMuted ? (
+            <>
+              <VolumeX className="w-4 h-4 text-red-400" />
+              <span className="hidden sm:inline">Unmute Video</span>
+            </>
+          ) : (
+            <>
+              <Volume2 className="w-4 h-4 text-emerald-400 animate-pulse" />
+              <span className="hidden sm:inline">Mute Video</span>
+            </>
+          )}
+        </button>
       </div>
 
       {/* Decorative Golden Gradient Glow Orbs */}
