@@ -1,0 +1,6 @@
+{
+  "name": "Owdium",
+  "description": "Experience high-quality audio content in African languages. Preserving culture, storytelling, education, and podcasts across Africa and worldwide.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
